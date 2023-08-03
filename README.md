@@ -16,8 +16,16 @@
 - [Epic Games](https://www.epicgames.com/) [win32]
 - [Battle.net](https://www.blizzard.com/) [win32]
 
+## Docs
+- [API Documentation](https://elschnagoo.github.io/local-games/)
 
 ## Quickstart
+
+### Install
+Install the package via npm
+```bash
+npm install @elschnagoo/local-games
+```
 
 ```ts
 import { LocalGames, BattleNetLauncher } from '@elschnagoo/local-games';
