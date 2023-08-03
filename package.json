@@ -59,5 +59,9 @@
     "node": ">=16.0.0",
     "npm": ">=7.0.0"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Elschnagoo/local-games.git"
+  }
 }
