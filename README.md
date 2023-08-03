@@ -1,5 +1,8 @@
 # Local-Games
 
+[![NPM Version](https://img.shields.io/npm/v/@elschnagoo/local-games.svg)](https://www.npmjs.com/package/@elschnagoo/local-games)
+[![NPM Downloads](https://img.shields.io/npm/dt/@elschnagoo/local-games.svg)](https://www.npmjs.com/package/@elschnagoo/local-games)
+
 > Read local game launcher config files and launch games
 
 
