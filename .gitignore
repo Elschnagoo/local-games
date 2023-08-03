@@ -1,0 +1,11 @@
+/package-lock.json
+/LocalGames.iml
+/src/dev.ts
+/coverage/
+/.env
+/node_modules/
+/.idea/
+/junit.xml
+/*.tgz
+/dist
+/docs

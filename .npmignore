@@ -1,0 +1,16 @@
+*.tgz
+*.iml
+coverage
+.env
+.idea
+.eslintignore
+jest.config.js
+.eslintrc
+.gitignore
+junit.xml
+tsconfig.json
+src
+/dist/tests
+/dist/dev.d.ts
+/dist/dev.js
+docs

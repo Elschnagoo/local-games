@@ -1,0 +1,63 @@
+{
+  "name": "@elschnagoo/local-games",
+  "description": "A library to get local games from different platforms and launcher",
+  "version": "0.0.1",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "private": false,
+  "scripts": {
+    "build": "tsc",
+    "buildprep": "npm run build",
+    "pack": "npm run build && npm pack",
+    "dev": "ts-node src/dev.ts",
+    "lint": "eslint src",
+    "test": "jest --runInBand --ci --collectCoverage   --coverageDirectory=\"./coverage\"  --reporters=default --reporters=jest-junit",
+    "test-coverage": "npm run buildApi && npm run test",
+    "doc": "typedoc"
+  },
+  "dependencies": {
+    "@grandlinex/core": "0.30.1",
+    "form-data": "^4.0.0",
+    "js-yaml": "4.1.0",
+    "protobufjs": "^7.2.4",
+    "sharp": "^0.32.4"
+  },
+  "devDependencies": {
+    "dotenv": "^16.3.1",
+    "@types/jest": "^29.5.3",
+    "@types/js-yaml": "^4.0.5",
+    "@types/node": "20.3.2",
+    "@typescript-eslint/eslint-plugin": "5.60.1",
+    "@typescript-eslint/parser": "5.60.1",
+    "eslint": "8.43.0",
+    "eslint-config-airbnb": "19.0.4",
+    "eslint-config-airbnb-typescript": "17.0.0",
+    "eslint-config-prettier": "8.8.0",
+    "eslint-plugin-import": "2.27.5",
+    "eslint-plugin-jest": "27.2.2",
+    "eslint-plugin-jsx-a11y": "6.7.1",
+    "eslint-plugin-prettier": "4.2.1",
+    "prettier": "2.8.8",
+    "ts-loader": "9.4.4",
+    "ts-node": "10.9.1",
+    "typescript": "5.1.6",
+    "jest": "29.6.1",
+    "jest-junit": "16.0.0",
+    "ts-jest": "29.1.1",
+    "typedoc": "^0.24.8"
+  },
+  "keywords": [
+    "typescript",
+    "steam",
+    "epic-games",
+    "battle.net"
+  ],
+  "author": {
+    "name": "Elschnagoo"
+  },
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=7.0.0"
+  },
+  "license": "MIT"
+}
