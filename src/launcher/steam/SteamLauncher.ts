@@ -128,15 +128,15 @@ export class SteamLauncher extends GameLauncher<SteamGame> {
   }
 
   async getGameImageBase64(game: SteamGame): Promise<IGameImage> {
+    const port = await BaseImg.fromUrl(
+      this.getImagePortraitURL(game.key),
+      false
+    );
     return {
-      portrait: await BaseImg.fromUrl(
-        this.getImagePortraitURL(game.key),
-        false
-      ),
-      fallback: await BaseImg.fromUrl(
-        this.getImageLandscapeURL(game.key),
-        false
-      ),
+      portrait: port,
+      fallback: !port
+        ? await BaseImg.fromUrl(this.getImageLandscapeURL(game.key), false)
+        : null,
       icon: isSteamGame(game.raw)
         ? await BaseImg.fromUrl(
             this.getGameIconURL(game.key, game.raw.img_icon_url),

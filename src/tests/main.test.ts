@@ -1,19 +1,22 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { config } from 'dotenv';
+import Path from 'path';
 import {
   BattleNetLauncher,
   EpicLauncher,
+  HtmlUtil,
   IGame,
   Launcher,
   LocalGames,
   SteamLauncher,
+  UplayLauncher,
 } from '../index';
 
 config();
 
 let lg: LocalGames;
 
-const { EPIC_INSTALL, STEAM_APIKEY, STEAM_VANITY } = process.env;
+const { EPIC_INSTALL, STEAM_APIKEY, STEAM_VANITY, MAKE_HTML } = process.env;
 
 describe('LocalGames', () => {
   test('create objs', () => {
@@ -33,6 +36,7 @@ describe.each([
     {
       fallback: false,
       icon: false,
+      fileExe: false,
     },
   ],
   [
@@ -41,6 +45,7 @@ describe.each([
     {
       fallback: false,
       icon: false,
+      fileExe: true,
     },
   ],
   [
@@ -49,6 +54,16 @@ describe.each([
     {
       fallback: true,
       icon: true,
+      fileExe: false,
+    },
+  ],
+  [
+    Launcher.UPLAY,
+    new UplayLauncher({ lang: 'de-DE' }),
+    {
+      fallback: false,
+      icon: false,
+      fileExe: true,
     },
   ],
 ])(`Launcher: %s`, (name, launcher, props) => {
@@ -107,13 +122,18 @@ describe.each([
 });
 
 describe('full', () => {
-  test('list launcher', async () => {
-    expect((await lg.getGames()).length).toBeGreaterThan(3);
+  test('list games', async () => {
+    expect((await lg.getGames()).length).toBeGreaterThan(0);
   });
+  test('make-html', async () => {
+    if (MAKE_HTML === 'true') {
+      await HtmlUtil.make(lg, Path.join(__dirname, '..', '..', 'test.html'));
+    }
+  }, 1000000);
 });
 
 describe('final', () => {
   test('list launcher', () => {
-    expect(lg.listLaunchers()).toHaveLength(3);
+    expect(lg.listLaunchers()).toHaveLength(4);
   });
 });

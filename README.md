@@ -18,6 +18,7 @@
 - [Steam](https://store.steampowered.com/) [win32, darwin, linux]
 - [Epic Games](https://www.epicgames.com/) [win32]
 - [Battle.net](https://www.blizzard.com/) [win32]
+- [Ubisoft Connect](https://www.ubisoft.com/) [win32] (Uplay)
 
 ## Docs
 - [API Documentation](https://elschnagoo.github.io/local-games/)

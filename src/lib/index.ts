@@ -1,7 +1,8 @@
 export enum Launcher {
-  'STEAM' = 'steam',
-  'EPIC_GAMES' = 'epic_games',
-  'BATTLE_NET' = 'battle_net',
+  'STEAM' = 'STEAM',
+  'EPIC_GAMES' = 'EPIC',
+  'BATTLE_NET' = 'BATTLENET',
+  'UPLAY' = 'UPLAY',
 }
 
 export interface IGame<G = any> {
