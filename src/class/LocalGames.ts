@@ -1,6 +1,6 @@
 import { CMap, CoreLogChannel, CoreLogger } from '@grandlinex/core';
 import { GameLauncher } from './GameLauncher';
-import { IGame, Launcher } from '../lib';
+import { IGame, IRunGame, Launcher } from '../lib';
 import RunGame from './RunGame';
 
 /**
@@ -21,8 +21,8 @@ export default class LocalGames extends CoreLogChannel {
   /**
    * Get all games
    */
-  async getGames(): Promise<IGame[]> {
-    const out: IGame[] = [];
+  async getGames(): Promise<IRunGame[]> {
+    const out: IRunGame[] = [];
     await Promise.all(
       this.launcher.map(async (value) => {
         out.push(...(await value.getGames()));
@@ -35,8 +35,12 @@ export default class LocalGames extends CoreLogChannel {
    * Get run game
    * @param game
    */
-  getRunGame<T extends IGame>(game: T) {
-    return new RunGame<T>(game, this.getLauncher(game.launcher)!);
+  getRunGame<T>(game: IGame<T>): IRunGame<T> {
+    const l = this.getLauncher(game.launcher);
+    if (!l) {
+      throw this.lError(`Launcher ${game.launcher} not found!`);
+    }
+    return new RunGame<T>(game, l);
   }
 
   /**

@@ -3,18 +3,20 @@ import Protobuf from 'protobufjs';
 import * as Path from 'path';
 import { Apps, conf } from './raw';
 import { GameLauncher } from '../../class/GameLauncher';
-import { IGame, IGameImage, Launcher } from '../../lib';
+import { IGame, IGameImage, IRunGame, Launcher } from '../../lib';
+import RunGame from '../../class/RunGame';
 
 export type BattleNetLauncherProps = Partial<{
   configPath: string;
   imgPath: string;
 }>;
 
-export type BattleNetGame = IGame<{
+export type BattleNetGameRaw = {
   path: string | null;
-}>;
+};
+export type BattleNetGame = IGame<BattleNetGameRaw>;
 
-export class BattleNetLauncher extends GameLauncher<BattleNetGame> {
+export class BattleNetLauncher extends GameLauncher<BattleNetGameRaw> {
   decoder: Protobuf.Type;
 
   data: any;
@@ -46,20 +48,25 @@ export class BattleNetLauncher extends GameLauncher<BattleNetGame> {
     };
   }
 
-  async getGames(): Promise<BattleNetGame[]> {
+  async getGames(): Promise<IRunGame<BattleNetGameRaw>[]> {
     const games = this.getProducts(true);
-    const out: BattleNetGame[] = [];
+    const out: IRunGame<BattleNetGameRaw>[] = [];
     for (const g of games) {
-      out.push({
-        key: g,
-        name: this.getInstallationName(g) || g,
-        installed: true,
-        wishList: false,
-        launcher: this.getName(),
-        raw: {
-          path: await this.getInstallExe(g),
-        },
-      });
+      out.push(
+        new RunGame(
+          {
+            key: g,
+            name: this.getInstallationName(g) || g,
+            installed: true,
+            wishList: false,
+            launcher: this.getName(),
+            raw: {
+              path: await this.getInstallExe(g),
+            },
+          },
+          this
+        )
+      );
     }
     return out;
   }

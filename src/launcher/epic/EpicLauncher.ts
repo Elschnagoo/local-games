@@ -1,8 +1,9 @@
 import fs from 'fs';
 import Path from 'path';
 import { GameLauncher } from '../../class/GameLauncher';
-import { IGame, IGameImage, Launcher } from '../../lib';
+import { IGame, IGameImage, IRunGame, Launcher } from '../../lib';
 import BaseImg from '../../util/BaseImg';
+import RunGame from '../../class/RunGame';
 
 export type EpicGameRaw = {
   title: string;
@@ -31,12 +32,12 @@ export type EpicGameRaw = {
   }[];
 } & Record<string, any>;
 
-export type EpicGame = IGame<{
+export type EpicGame = {
   title: string;
   id: string;
   namespace: string;
   appId: string;
-}>;
+};
 
 export type EpicLauncherProps = Partial<{
   configPath: string;
@@ -69,7 +70,7 @@ export class EpicLauncher extends GameLauncher<EpicGame> {
   }
 
   async getGameImageBase64(
-    game: EpicGame,
+    game: IGame<EpicGame>,
     resize: boolean
   ): Promise<IGameImage> {
     if (!game.imgUrl) {
@@ -82,7 +83,7 @@ export class EpicLauncher extends GameLauncher<EpicGame> {
     };
   }
 
-  async getGames(): Promise<EpicGame[]> {
+  async getGames(): Promise<IRunGame<EpicGame>[]> {
     const list = await this.getJson();
     if (!list) {
       return [];
@@ -97,20 +98,27 @@ export class EpicLauncher extends GameLauncher<EpicGame> {
 
         return !addon && !engines && game && appId;
       })
-      .map<EpicGame>((x) => ({
-        key: x.id,
-        name: x.title,
-        installed: local?.includes(x.id) || false,
-        launcher: this.getName(),
-        wishList: false,
-        imgUrl: x.keyImages.find((e) => e.type === 'DieselGameBoxTall')?.url,
-        raw: {
-          title: x.title,
-          id: x.id,
-          namespace: x.namespace,
-          appId: x.releaseInfo[0].appId,
-        },
-      }));
+      .map<IRunGame<EpicGame>>(
+        (x) =>
+          new RunGame(
+            {
+              key: x.id,
+              name: x.title,
+              installed: local?.includes(x.id) || false,
+              launcher: this.getName(),
+              wishList: false,
+              imgUrl: x.keyImages.find((e) => e.type === 'DieselGameBoxTall')
+                ?.url,
+              raw: {
+                title: x.title,
+                id: x.id,
+                namespace: x.namespace,
+                appId: x.releaseInfo[0].appId,
+              },
+            },
+            this
+          )
+      );
   }
 
   init(): Promise<void> {
@@ -121,7 +129,7 @@ export class EpicLauncher extends GameLauncher<EpicGame> {
     return 'com.epicgames.launcher://';
   }
 
-  async getLaunchGameCMD(game: EpicGame): Promise<string | null> {
+  async getLaunchGameCMD(game: IGame<EpicGame>): Promise<string | null> {
     if (game.wishList) {
       return null;
     }
@@ -131,7 +139,7 @@ export class EpicLauncher extends GameLauncher<EpicGame> {
     return `com.epicgames.launcher://apps/${game.raw.namespace}%3A${game.raw.id}%3A${game.raw.appId}?action=install&silent=true`;
   }
 
-  async getOpenShopCMD(game: EpicGame): Promise<string | null> {
+  async getOpenShopCMD(game: IGame<EpicGame>): Promise<string | null> {
     return `com.epicgames.launcher://store/de/p/${storeUrl(game.raw.title)}`;
   }
 

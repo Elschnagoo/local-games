@@ -14,6 +14,13 @@ export interface IGame<G = any> {
   imgUrl?: string;
   raw: G;
 }
+export interface IRunGame<G = any> extends IGame<G> {
+  getGameImageBase64(resize: boolean): Promise<IGameImage | null>;
+  getLaunchGameCMD(): Promise<string | null>;
+  getLauncherCMD(): Promise<string | null>;
+  getOpenShopCMD(): Promise<string | null>;
+  defaultCMD(): Promise<string | null>;
+}
 
 export interface IGameImage {
   portrait: string | null;

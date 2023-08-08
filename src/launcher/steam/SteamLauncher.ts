@@ -8,6 +8,7 @@ import { IGame, IGameImage, Launcher } from '../../lib';
 import parse from './VDF';
 import NodeCon, { ConHandle } from '../../class/NodeCon';
 import BaseImg from '../../util/BaseImg';
+import RunGame from '../../class/RunGame';
 
 export type SteamLauncherProps = Partial<{
   configPath: string;
@@ -72,7 +73,7 @@ export function isSteamGame(
   return (inp as SteamGameRaw).appid !== undefined;
 }
 
-export type SteamGame = IGame<SteamGameRaw | SteamWish>;
+export type SteamGame = SteamGameRaw | SteamWish;
 
 export class SteamLauncher extends GameLauncher<SteamGame> {
   private basePath: string;
@@ -128,7 +129,7 @@ export class SteamLauncher extends GameLauncher<SteamGame> {
     this.apiKey = config.apiKey;
   }
 
-  async getGameImageBase64(game: SteamGame): Promise<IGameImage> {
+  async getGameImageBase64(game: IGame<SteamGame>): Promise<IGameImage> {
     const port = await BaseImg.fromUrl(
       this.getImagePortraitURL(game.key),
       false
@@ -147,8 +148,8 @@ export class SteamLauncher extends GameLauncher<SteamGame> {
     };
   }
 
-  async getGames(): Promise<SteamGame[]> {
-    const list: SteamGame[] = [];
+  async getGames(): Promise<RunGame<SteamGame>[]> {
+    const list: IGame<SteamGame>[] = [];
     const uid = (await this.steamID64())!;
     const local = this.getInsaledGameIDs();
     const g = await this.geApiGames(uid);
@@ -177,18 +178,18 @@ export class SteamLauncher extends GameLauncher<SteamGame> {
       });
     });
 
-    return list;
+    return list.map((gl) => new RunGame(gl, this));
   }
 
   async getLauncherCMD(): Promise<string | null> {
     return 'steam://';
   }
 
-  async getLaunchGameCMD(game: SteamGame): Promise<string | null> {
+  async getLaunchGameCMD(game: IGame<SteamGame>): Promise<string | null> {
     return `steam://rungameid/${game.key}`;
   }
 
-  async getOpenShopCMD(game: SteamGame): Promise<string | null> {
+  async getOpenShopCMD(game: IGame<SteamGame>): Promise<string | null> {
     return `steam://advertise/${game.key}`;
   }
 

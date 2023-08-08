@@ -1,11 +1,12 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { config } from 'dotenv';
 import Path from 'path';
+import { DefaultLogger } from '@grandlinex/core';
 import {
   BattleNetLauncher,
   EpicLauncher,
   HtmlUtil,
-  IGame,
+  IRunGame,
   Launcher,
   LocalGames,
   SteamLauncher,
@@ -20,7 +21,7 @@ const { EPIC_INSTALL, STEAM_APIKEY, STEAM_VANITY, MAKE_HTML } = process.env;
 
 describe('LocalGames', () => {
   test('create objs', () => {
-    lg = new LocalGames();
+    lg = new LocalGames(new DefaultLogger());
   });
   test('empty', () => {
     expect(lg.listLaunchers()).toHaveLength(0);
@@ -71,8 +72,8 @@ describe.each([
     },
   ],
 ])(`Launcher: %s`, (name, launcher, props) => {
-  let games: IGame[];
-  let game: IGame;
+  let games: IRunGame[];
+  let game: IRunGame;
   test('register launcher', async () => {
     const r = await lg.registerLauncher(launcher);
     expect(r.success).toBeTruthy();
@@ -81,7 +82,7 @@ describe.each([
   test('get launcher', async () => {
     const l = lg.getLauncher(name);
     expect(l).toBeDefined();
-    console.log(l?.getName());
+    lg.log(l?.getName());
   });
   test('get games', async () => {
     games = await launcher.getGames();
@@ -89,42 +90,55 @@ describe.each([
   });
   test('get game image', async () => {
     [game] = games;
-    console.log(game);
+    lg.log(
+      JSON.stringify(
+        {
+          ...game,
+          runLauncher: null,
+        },
+        null,
+        2
+      )
+    );
     expect(game).toBeDefined();
-    const img = await launcher.getGameImageBase64(game, true);
-    expect(img.portrait).toBeDefined();
-    if (img.portrait) {
-      console.log('portrait', img.portrait.substring(0, 40));
+    const img = await game.getGameImageBase64(true);
+    expect(img?.portrait).toBeDefined();
+    if (img?.portrait) {
+      lg.log('portrait', img.portrait.substring(0, 40));
     }
     if (props.fallback) {
-      expect(img.fallback).toBeDefined();
-      console.log('fallback', img.fallback?.substring(0, 40));
+      expect(img?.fallback).toBeDefined();
+      lg.log('fallback', img?.fallback?.substring(0, 40));
     } else {
-      expect(img.fallback).toBeUndefined();
+      expect(img?.fallback).toBeUndefined();
     }
     if (props.icon) {
-      expect(img.icon).toBeDefined();
-      console.log('icon', img.icon?.substring(0, 40));
+      expect(img?.icon).toBeDefined();
+      lg.log('icon', img?.icon?.substring(0, 40));
     } else {
-      expect(img.icon).toBeUndefined();
+      expect(img?.icon).toBeUndefined();
     }
   });
   test('get game run cmd', async () => {
-    const cmd = await launcher.getLaunchGameCMD(game);
+    const cmd = await game.getLaunchGameCMD();
     expect(cmd).toBeDefined();
-    console.log(cmd);
+    lg.log(cmd);
   });
   test('get game shop cmd', async () => {
-    const cmd = await launcher.getOpenShopCMD(game);
+    const cmd = await game.getOpenShopCMD();
     if (launcher.hasShopLink()) {
       expect(cmd).toBeDefined();
-      console.log(cmd);
+      lg.log(cmd);
     } else {
       expect(cmd).toBeNull();
     }
   });
+  test('get default cmd', async () => {
+    const cmd = await game.defaultCMD();
+    expect(cmd).toBeDefined();
+  });
   test('install cmd', async () => {
-    const cmd = await launcher.getLauncherCMD();
+    const cmd = await game.getLauncherCMD();
     if (props.lCmd) {
       expect(cmd).toBeDefined();
     } else {
@@ -135,7 +149,8 @@ describe.each([
 
 describe('full', () => {
   test('list games', async () => {
-    expect((await lg.getGames()).length).toBeGreaterThan(0);
+    const g = await lg.getGames();
+    expect(g.length).toBeGreaterThan(0);
   });
   test('make-html', async () => {
     if (MAKE_HTML === 'true') {

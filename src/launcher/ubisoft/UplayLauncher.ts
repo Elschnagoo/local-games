@@ -5,8 +5,9 @@ import { GameLauncher } from '../../class/GameLauncher';
 import { IGame, IGameImage, Launcher } from '../../lib';
 import SearchUtil from '../../util/SearchUtil';
 import BaseImg from '../../util/BaseImg';
+import RunGame from '../../class/RunGame';
 
-export type UGameConf = {
+export type UPlayGame = {
   root: Record<string, any> & {
     defaultName: string;
     name: string;
@@ -33,8 +34,6 @@ export type UGameConf = {
   };
   path: string | null;
 };
-
-export type UPlayGame = IGame<UGameConf>;
 
 export type UPlayProps = Partial<{
   configPath: string;
@@ -81,7 +80,7 @@ export class UplayLauncher extends GameLauncher<UPlayGame> {
     this.lang = props?.lang || 'default';
   }
 
-  async getGameImageBase64(game: UPlayGame): Promise<IGameImage> {
+  async getGameImageBase64(game: IGame<UPlayGame>): Promise<IGameImage> {
     if (!game.imgUrl) {
       return {
         portrait: null,
@@ -92,7 +91,7 @@ export class UplayLauncher extends GameLauncher<UPlayGame> {
     };
   }
 
-  async getGames(): Promise<UPlayGame[]> {
+  async getGames(): Promise<RunGame<UPlayGame>[]> {
     const els = await this.getRaw();
     const games = els.filter(
       (el) =>
@@ -101,8 +100,8 @@ export class UplayLauncher extends GameLauncher<UPlayGame> {
 
     return (
       await Promise.all(
-        games.map<Promise<UPlayGame>>(async (el) => {
-          const tmp: UPlayGame = {
+        games.map<Promise<RunGame<UPlayGame>>>(async (el) => {
+          const tmp: IGame<UPlayGame> = {
             key: el.root.space_id!,
             name: this.getTranslation(el, el.root.name),
             installed: false,
@@ -124,7 +123,7 @@ export class UplayLauncher extends GameLauncher<UPlayGame> {
           const path = await this.resolveGamePath(tmp);
           tmp.raw.path = path;
           tmp.installed = path !== null;
-          return tmp;
+          return new RunGame(tmp, this);
         })
       )
     ).sort((a, b) =>
@@ -138,11 +137,11 @@ export class UplayLauncher extends GameLauncher<UPlayGame> {
     return 'uplay://';
   }
 
-  async getLaunchGameCMD(game: UPlayGame): Promise<string | null> {
+  async getLaunchGameCMD(game: IGame<UPlayGame>): Promise<string | null> {
     return game.raw.path;
   }
 
-  async getOpenShopCMD(game: UPlayGame): Promise<string | null> {
+  async getOpenShopCMD(game: IGame<UPlayGame>): Promise<string | null> {
     return null;
   }
 
@@ -158,7 +157,7 @@ export class UplayLauncher extends GameLauncher<UPlayGame> {
    * Private methods
    */
 
-  private getTranslation(game: UGameConf, key: string, lang?: string): string {
+  private getTranslation(game: UPlayGame, key: string, lang?: string): string {
     const loc = game.localizations?.[lang || this.lang];
     if (loc && loc[key]) {
       return loc[key];
@@ -211,13 +210,13 @@ export class UplayLauncher extends GameLauncher<UPlayGame> {
       stream.write('[\n');
     }
 
-    const list: UGameConf[] = [];
+    const list: UPlayGame[] = [];
     out.forEach((el, i) => {
       if (i !== 0) {
         stream?.write(',\n');
       }
       try {
-        const a = yml.load(el) as UGameConf;
+        const a = yml.load(el) as UPlayGame;
         list.push(a);
         stream?.write(JSON.stringify(a, undefined, 2));
       } catch (e) {
@@ -236,7 +235,7 @@ export class UplayLauncher extends GameLauncher<UPlayGame> {
     return list;
   }
 
-  private getGameExeName(game: UPlayGame): string | null {
+  private getGameExeName(game: IGame<UPlayGame>): string | null {
     const online =
       game.raw.root.start_game?.online?.executables?.[0]?.path.relative || null;
     const offline =
@@ -249,7 +248,9 @@ export class UplayLauncher extends GameLauncher<UPlayGame> {
     return null;
   }
 
-  private async resolveGamePath(game: UPlayGame): Promise<string | null> {
+  private async resolveGamePath(
+    game: IGame<UPlayGame>
+  ): Promise<string | null> {
     const exe = this.getGameExeName(game);
     if (!exe) {
       return null;

@@ -1,7 +1,7 @@
-import { IGame, IGameImage, Launcher } from '../lib';
+import { IGame, IGameImage, IRunGame, Launcher } from '../lib';
 import { GameLauncher } from './GameLauncher';
 
-export default class RunGame<T = any> implements IGame<T> {
+export default class RunGame<T = any> implements IGame<T>, IRunGame<T> {
   readonly imgUrl?: string;
 
   readonly installed: boolean;
@@ -18,7 +18,7 @@ export default class RunGame<T = any> implements IGame<T> {
 
   readonly runLauncher: GameLauncher;
 
-  constructor(g: IGame, runLauncher: GameLauncher) {
+  constructor(g: IGame<T>, runLauncher: GameLauncher<T>) {
     this.imgUrl = g.imgUrl;
     this.installed = g.installed;
     this.key = g.key;

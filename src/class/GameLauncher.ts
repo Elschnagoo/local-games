@@ -1,6 +1,6 @@
 import { platform } from 'process';
-import { CoreLogChannel, CoreLogger, DefaultLogger } from '@grandlinex/core';
-import { IGame, IGameImage, Launcher } from '../lib';
+import { CoreLogChannel, CoreLogger } from '@grandlinex/core';
+import { IGame, IGameImage, IRunGame, Launcher } from '../lib';
 
 export interface IGameLauncherProps {
   hasShop: boolean;
@@ -10,14 +10,17 @@ export interface IGameLauncherProps {
   logger?: CoreLogger;
 }
 
-export interface IGameLauncher<T extends IGame = IGame> {
-  getGames(): Promise<T[]>;
-  getOpenShopCMD(game: T): Promise<string | null>;
-  getLaunchGameCMD(game: T): Promise<string | null>;
-  getGameImageBase64(game: T, resize: boolean): Promise<IGameImage | null>;
+export interface IGameLauncher<T> {
+  getGames(): Promise<IRunGame<T>[]>;
+  getOpenShopCMD(game: IGame<T>): Promise<string | null>;
+  getLaunchGameCMD(game: IGame<T>): Promise<string | null>;
+  getGameImageBase64(
+    game: IGame<T>,
+    resize: boolean
+  ): Promise<IGameImage | null>;
   getLauncherCMD(): Promise<string | null>;
 }
-export abstract class GameLauncher<T extends IGame = IGame>
+export abstract class GameLauncher<T = any>
   extends CoreLogChannel
   implements IGameLauncher<T>
 {
@@ -72,7 +75,7 @@ export abstract class GameLauncher<T extends IGame = IGame>
   /**
    * Get list of games
    */
-  abstract getGames(): Promise<T[]>;
+  abstract getGames(): Promise<IRunGame<T>[]>;
 
   /**
    * Get launcher command
@@ -83,7 +86,7 @@ export abstract class GameLauncher<T extends IGame = IGame>
    * Get lauch game command
    * @param game
    */
-  abstract getLaunchGameCMD(game: T): Promise<string | null>;
+  abstract getLaunchGameCMD(game: IGame<T>): Promise<string | null>;
 
   /**
    * Launcher can open shop page
@@ -96,12 +99,15 @@ export abstract class GameLauncher<T extends IGame = IGame>
    * Get shop game command
    * @param game
    */
-  abstract getOpenShopCMD(game: T): Promise<string | null>;
+  abstract getOpenShopCMD(game: IGame<T>): Promise<string | null>;
 
   /**
    * Get game image as base64 webp
    * @param game
    * @param resize resize image to 228x336
    */
-  abstract getGameImageBase64(game: T, resize: boolean): Promise<IGameImage>;
+  abstract getGameImageBase64(
+    game: IGame<T>,
+    resize: boolean
+  ): Promise<IGameImage>;
 }
