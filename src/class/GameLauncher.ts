@@ -1,6 +1,6 @@
 import { platform } from 'process';
 import { CoreLogChannel, CoreLogger } from '@grandlinex/core';
-import { IGame, IGameImage, IRunGame, Launcher } from '../lib';
+import { IGame, IGameImage, IGameLauncher, IRunGame, Launcher } from '../lib';
 
 export interface IGameLauncherProps {
   hasShop: boolean;
@@ -10,16 +10,6 @@ export interface IGameLauncherProps {
   logger?: CoreLogger;
 }
 
-export interface IGameLauncher<T> {
-  getGames(): Promise<IRunGame<T>[]>;
-  getOpenShopCMD(game: IGame<T>): Promise<string | null>;
-  getLaunchGameCMD(game: IGame<T>): Promise<string | null>;
-  getGameImageBase64(
-    game: IGame<T>,
-    resize: boolean
-  ): Promise<IGameImage | null>;
-  getLauncherCMD(): Promise<string | null>;
-}
 export abstract class GameLauncher<T = any>
   extends CoreLogChannel
   implements IGameLauncher<T>

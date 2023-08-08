@@ -90,16 +90,7 @@ describe.each([
   });
   test('get game image', async () => {
     [game] = games;
-    lg.log(
-      JSON.stringify(
-        {
-          ...game,
-          runLauncher: null,
-        },
-        null,
-        2
-      )
-    );
+    lg.log(JSON.stringify(game.getRaw(), null, 2));
     expect(game).toBeDefined();
     const img = await game.getGameImageBase64(true);
     expect(img?.portrait).toBeDefined();

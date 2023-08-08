@@ -4,7 +4,16 @@ export enum Launcher {
   'BATTLE_NET' = 'BATTLENET',
   'UPLAY' = 'UPLAY',
 }
-
+export interface IGameLauncher<T> {
+  getGames(): Promise<IRunGame<T>[]>;
+  getOpenShopCMD(game: IGame<T>): Promise<string | null>;
+  getLaunchGameCMD(game: IGame<T>): Promise<string | null>;
+  getGameImageBase64(
+    game: IGame<T>,
+    resize: boolean
+  ): Promise<IGameImage | null>;
+  getLauncherCMD(): Promise<string | null>;
+}
 export interface IGame<G = any> {
   key: string;
   name: string;
@@ -20,6 +29,8 @@ export interface IRunGame<G = any> extends IGame<G> {
   getLauncherCMD(): Promise<string | null>;
   getOpenShopCMD(): Promise<string | null>;
   defaultCMD(): Promise<string | null>;
+  getRaw(): IGame<G>;
+  getLauncher(): IGameLauncher<G>;
 }
 
 export interface IGameImage {
