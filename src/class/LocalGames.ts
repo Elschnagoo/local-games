@@ -1,30 +1,26 @@
-import {
-  CMap,
-  CoreLogChannel,
-  CoreLogger,
-  DefaultLogger,
-} from '@grandlinex/core';
-import { GameLauncher, IGameLauncher } from './GameLauncher';
-import { IGame, IGameImage, Launcher } from '../lib';
+import { CMap, CoreLogChannel, CoreLogger } from '@grandlinex/core';
+import { GameLauncher } from './GameLauncher';
+import { IGame, Launcher } from '../lib';
+import RunGame from './RunGame';
 
 /**
  * Local games
  * @class LocalGames
  */
-export default class LocalGames
-  extends CoreLogChannel
-  implements IGameLauncher
-{
+export default class LocalGames extends CoreLogChannel {
   private launcher: CMap<string | Launcher, GameLauncher>;
 
   /**
    * Creates an instance of LocalGames.
    */
   constructor(logger?: CoreLogger) {
-    super('local-games', logger || new DefaultLogger());
+    super('local-games', logger || null);
     this.launcher = new CMap();
   }
 
+  /**
+   * Get all games
+   */
   async getGames(): Promise<IGame[]> {
     const out: IGame[] = [];
     await Promise.all(
@@ -35,31 +31,24 @@ export default class LocalGames
     return out;
   }
 
-  async getOpenShopCMD(game: IGame): Promise<string | null> {
-    const l = this.getLauncher(game.launcher);
-    if (!l) {
-      return null;
-    }
-    return l.getOpenShopCMD(game);
+  /**
+   * Get run game
+   * @param game
+   */
+  getRunGame<T extends IGame>(game: T) {
+    return new RunGame<T>(game, this.getLauncher(game.launcher)!);
   }
 
-  async getLaunchGameCMD(game: IGame): Promise<string | null> {
-    const l = this.getLauncher(game.launcher);
+  /**
+   * Get launcher open command
+   * @param name
+   */
+  async getLauncherCMD(name: Launcher | string): Promise<string | null> {
+    const l = this.getLauncher(name);
     if (!l) {
       return null;
     }
-    return l.getLaunchGameCMD(game);
-  }
-
-  async getGameImageBase64(
-    game: IGame,
-    resize: boolean
-  ): Promise<IGameImage | null> {
-    const l = this.getLauncher(game.launcher);
-    if (!l) {
-      return null;
-    }
-    return l.getGameImageBase64(game, resize);
+    return l.getLauncherCMD();
   }
 
   /**
@@ -78,6 +67,11 @@ export default class LocalGames
     const res = await Promise.all(
       launcher.map<Promise<[string, boolean, GameLauncher]>>(async (l) => {
         try {
+          if (this.logger) {
+            l.setLogger(this.logger);
+            l.info('register');
+          }
+
           const r = await l.validate();
           if (!r.full) {
             this.warn(

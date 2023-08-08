@@ -1,10 +1,13 @@
 import { platform } from 'process';
+import { CoreLogChannel, CoreLogger, DefaultLogger } from '@grandlinex/core';
 import { IGame, IGameImage, Launcher } from '../lib';
 
 export interface IGameLauncherProps {
   hasShop: boolean;
+  canInstall: boolean;
   name: string | Launcher;
   os: (typeof platform)[];
+  logger?: CoreLogger;
 }
 
 export interface IGameLauncher<T extends IGame = IGame> {
@@ -12,15 +15,19 @@ export interface IGameLauncher<T extends IGame = IGame> {
   getOpenShopCMD(game: T): Promise<string | null>;
   getLaunchGameCMD(game: T): Promise<string | null>;
   getGameImageBase64(game: T, resize: boolean): Promise<IGameImage | null>;
+  getLauncherCMD(): Promise<string | null>;
 }
 export abstract class GameLauncher<T extends IGame = IGame>
+  extends CoreLogChannel
   implements IGameLauncher<T>
 {
-  protected platform: (typeof platform)[];
+  readonly platform: (typeof platform)[];
 
-  protected hasShop: boolean;
+  readonly hasShop: boolean;
 
-  protected name: string | Launcher;
+  readonly canInstall: boolean;
+
+  readonly name: string | Launcher;
 
   /**
    *
@@ -28,7 +35,9 @@ export abstract class GameLauncher<T extends IGame = IGame>
    * @protected
    */
   protected constructor(conf?: IGameLauncherProps) {
+    super(`launcher-${conf?.name || ''}`, conf?.logger || null);
     this.hasShop = conf?.hasShop || false;
+    this.canInstall = conf?.canInstall || false;
     this.name = conf?.name || '';
     this.platform = conf?.os || [];
   }
@@ -64,6 +73,11 @@ export abstract class GameLauncher<T extends IGame = IGame>
    * Get list of games
    */
   abstract getGames(): Promise<T[]>;
+
+  /**
+   * Get launcher command
+   */
+  abstract getLauncherCMD(): Promise<string | null>;
 
   /**
    * Get lauch game command

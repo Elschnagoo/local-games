@@ -65,7 +65,12 @@ export class UplayLauncher extends GameLauncher<UPlayGame> {
   lang: string;
 
   constructor(props?: UPlayProps) {
-    super({ name: Launcher.UPLAY, os: ['win32'], hasShop: false });
+    super({
+      name: Launcher.UPLAY,
+      os: ['win32'],
+      hasShop: false,
+      canInstall: false,
+    });
     this.path =
       props?.configPath ||
       'C:\\Program Files (x86)\\Ubisoft\\Ubisoft Game Launcher';
@@ -127,6 +132,10 @@ export class UplayLauncher extends GameLauncher<UPlayGame> {
         b.raw.root.sort_string || b.name
       )
     );
+  }
+
+  async getLauncherCMD(): Promise<string | null> {
+    return 'uplay://';
   }
 
   async getLaunchGameCMD(game: UPlayGame): Promise<string | null> {
@@ -212,8 +221,8 @@ export class UplayLauncher extends GameLauncher<UPlayGame> {
         list.push(a);
         stream?.write(JSON.stringify(a, undefined, 2));
       } catch (e) {
-        console.error(e);
-        console.error(el);
+        this.error(e);
+        this.error(el);
         stream?.close();
         throw new Error('Error');
       }

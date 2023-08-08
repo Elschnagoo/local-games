@@ -56,7 +56,12 @@ export class EpicLauncher extends GameLauncher<EpicGame> {
   installPath: string;
 
   constructor(props?: EpicLauncherProps) {
-    super({ name: Launcher.EPIC_GAMES, os: ['win32'], hasShop: true });
+    super({
+      name: Launcher.EPIC_GAMES,
+      os: ['win32'],
+      hasShop: true,
+      canInstall: true,
+    });
     this.path =
       props?.configPath ||
       'C:\\ProgramData\\Epic\\EpicGamesLauncher\\Data\\Catalog\\catcache.bin';
@@ -112,6 +117,10 @@ export class EpicLauncher extends GameLauncher<EpicGame> {
     return Promise.resolve(undefined);
   }
 
+  async getLauncherCMD(): Promise<string | null> {
+    return 'com.epicgames.launcher://';
+  }
+
   async getLaunchGameCMD(game: EpicGame): Promise<string | null> {
     if (game.wishList) {
       return null;
@@ -138,7 +147,7 @@ export class EpicLauncher extends GameLauncher<EpicGame> {
 
       return JSON.parse(bf);
     } catch (e) {
-      console.error(e);
+      this.error(e);
       return null;
     }
   }
@@ -149,7 +158,7 @@ export class EpicLauncher extends GameLauncher<EpicGame> {
       !fs.existsSync(this.installPath) ||
       !fs.statSync(this.installPath).isDirectory()
     ) {
-      console.error('Invalid path');
+      this.error('Invalid path');
       return null;
     }
     const files = await fs.promises.readdir(this.installPath);

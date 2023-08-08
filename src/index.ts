@@ -1,5 +1,6 @@
 import LocalGames from './class/LocalGames';
 import BaseImg from './util/BaseImg';
+import RunGame from './class/RunGame';
 
 import SearchUtil from './util/SearchUtil';
 import HtmlUtil from './util/HtmlUtil';
@@ -11,6 +12,6 @@ export * from './launcher/battlenet/BattleNetLauncher';
 export * from './launcher/steam/SteamLauncher';
 export * from './launcher/ubisoft/UplayLauncher';
 
-export { LocalGames, BaseImg, SearchUtil, HtmlUtil };
+export { LocalGames, BaseImg, SearchUtil, HtmlUtil, RunGame };
 
 export default LocalGames;

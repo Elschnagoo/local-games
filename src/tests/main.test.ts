@@ -37,6 +37,7 @@ describe.each([
       fallback: false,
       icon: false,
       fileExe: false,
+      lCmd: true,
     },
   ],
   [
@@ -46,6 +47,7 @@ describe.each([
       fallback: false,
       icon: false,
       fileExe: true,
+      lCmd: false,
     },
   ],
   [
@@ -55,6 +57,7 @@ describe.each([
       fallback: true,
       icon: true,
       fileExe: false,
+      lCmd: true,
     },
   ],
   [
@@ -64,6 +67,7 @@ describe.each([
       fallback: false,
       icon: false,
       fileExe: true,
+      lCmd: true,
     },
   ],
 ])(`Launcher: %s`, (name, launcher, props) => {
@@ -115,6 +119,14 @@ describe.each([
     if (launcher.hasShopLink()) {
       expect(cmd).toBeDefined();
       console.log(cmd);
+    } else {
+      expect(cmd).toBeNull();
+    }
+  });
+  test('install cmd', async () => {
+    const cmd = await launcher.getLauncherCMD();
+    if (props.lCmd) {
+      expect(cmd).toBeDefined();
     } else {
       expect(cmd).toBeNull();
     }

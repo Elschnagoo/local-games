@@ -96,6 +96,7 @@ export class SteamLauncher extends GameLauncher<SteamGame> {
       name: Launcher.STEAM,
       os: ['win32', 'linux', 'darwin'],
       hasShop: true,
+      canInstall: true,
     });
     if (config.configPath) {
       this.basePath = config.configPath;
@@ -179,6 +180,10 @@ export class SteamLauncher extends GameLauncher<SteamGame> {
     return list;
   }
 
+  async getLauncherCMD(): Promise<string | null> {
+    return 'steam://';
+  }
+
   async getLaunchGameCMD(game: SteamGame): Promise<string | null> {
     return `steam://rungameid/${game.key}`;
   }
@@ -231,10 +236,10 @@ export class SteamLauncher extends GameLauncher<SteamGame> {
       return this.steamID;
     }
     if (!this.steamVanity) {
-      console.error('Cannot get steamID64 without steamVanity');
+      this.error('Cannot get steamID64 without steamVanity');
       return null;
     }
-    console.log('Getting steamID64 from steamVanity');
+    this.log('Getting steamID64 from steamVanity');
     const idRs = await this.getUserIDByUrl(this.steamVanity);
     if (!idRs) {
       throw new Error('Error getting steamID64, vanity url not valid');

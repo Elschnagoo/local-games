@@ -26,7 +26,12 @@ export class BattleNetLauncher extends GameLauncher<BattleNetGame> {
   buffer: Buffer | null = null;
 
   constructor(config?: BattleNetLauncherProps) {
-    super({ name: Launcher.BATTLE_NET, os: ['win32'], hasShop: false });
+    super({
+      name: Launcher.BATTLE_NET,
+      os: ['win32'],
+      hasShop: false,
+      canInstall: false,
+    });
     const proot = Protobuf.Root.fromJSON(conf);
     this.decoder = proot.lookupType('Database');
     this.path =
@@ -67,7 +72,11 @@ export class BattleNetLauncher extends GameLauncher<BattleNetGame> {
     return game.raw.path;
   }
 
-  async getOpenShopCMD(game: BattleNetGame): Promise<string | null> {
+  async getOpenShopCMD(): Promise<string | null> {
+    return null;
+  }
+
+  async getLauncherCMD(): Promise<string | null> {
     return null;
   }
 
