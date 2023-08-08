@@ -76,6 +76,17 @@ export function isSteamGame(
 export type SteamGame = SteamGameRaw | SteamWish;
 
 export class SteamLauncher extends GameLauncher<SteamGame> {
+  static win32 = 'C:\\Program Files (x86)\\Steam';
+
+  static linux = Path.join(homedir(), '.steam', 'steam');
+
+  static darwin = Path.join(
+    homedir(),
+    'Library',
+    'Application Support',
+    'Steam'
+  );
+
   private basePath: string;
 
   private configPath: string;
@@ -104,18 +115,13 @@ export class SteamLauncher extends GameLauncher<SteamGame> {
     } else {
       switch (platform) {
         case 'win32':
-          this.basePath = 'C:\\Program Files (x86)\\Steam';
+          this.basePath = SteamLauncher.win32;
           break;
         case 'linux':
-          this.basePath = Path.join(homedir(), 'steam', 'steam');
+          this.basePath = SteamLauncher.linux;
           break;
         case 'darwin':
-          this.basePath = Path.join(
-            homedir(),
-            'Library',
-            'Application Support',
-            'Steam'
-          );
+          this.basePath = SteamLauncher.darwin;
           break;
         default:
           throw new Error('No Steam path found');

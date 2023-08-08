@@ -63,6 +63,11 @@ export class UplayLauncher extends GameLauncher<UPlayGame> {
 
   lang: string;
 
+  static ConfigPath = 'C:\\Program Files (x86)\\Ubisoft\\Ubisoft Game Launcher';
+
+  static InstallPath =
+    'C:\\Program Files (x86)\\Ubisoft\\Ubisoft Game Launcher\\games';
+
   constructor(props?: UPlayProps) {
     super({
       name: Launcher.UPLAY,
@@ -70,13 +75,9 @@ export class UplayLauncher extends GameLauncher<UPlayGame> {
       hasShop: false,
       canInstall: false,
     });
-    this.path =
-      props?.configPath ||
-      'C:\\Program Files (x86)\\Ubisoft\\Ubisoft Game Launcher';
+    this.path = props?.configPath || UplayLauncher.ConfigPath;
     this.imgPath = Path.join(this.path, 'cache', 'assets');
-    this.installPath =
-      props?.installPath ||
-      'C:\\Program Files (x86)\\Ubisoft\\Ubisoft Game Launcher\\games';
+    this.installPath = props?.installPath || UplayLauncher.InstallPath;
     this.lang = props?.lang || 'default';
   }
 

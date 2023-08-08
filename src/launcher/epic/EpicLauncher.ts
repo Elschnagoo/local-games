@@ -56,6 +56,11 @@ export class EpicLauncher extends GameLauncher<EpicGame> {
 
   installPath: string;
 
+  static InstallPath = 'C:\\Program Files\\Epic Games';
+
+  static ConfigPath =
+    'C:\\ProgramData\\Epic\\EpicGamesLauncher\\Data\\Catalog\\catcache.bin';
+
   constructor(props?: EpicLauncherProps) {
     super({
       name: Launcher.EPIC_GAMES,
@@ -63,10 +68,8 @@ export class EpicLauncher extends GameLauncher<EpicGame> {
       hasShop: true,
       canInstall: true,
     });
-    this.path =
-      props?.configPath ||
-      'C:\\ProgramData\\Epic\\EpicGamesLauncher\\Data\\Catalog\\catcache.bin';
-    this.installPath = props?.installPath || 'C:\\Program Files\\Epic Games';
+    this.path = props?.configPath || EpicLauncher.ConfigPath;
+    this.installPath = props?.installPath || EpicLauncher.InstallPath;
   }
 
   async getGameImageBase64(

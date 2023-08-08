@@ -1,7 +1,7 @@
 {
   "name": "@elschnagoo/local-games",
   "description": "A library to get local games from different platforms and launcher",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "private": false,
