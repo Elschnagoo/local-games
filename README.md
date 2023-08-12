@@ -12,7 +12,9 @@
 - Get game info
 - Get game image
 - Get game executable
-
+- Open Game Launcher
+- Install game (partial [steam, epic])
+- Open shop page (partial [steam, epic])
 
 ## Currently supported launchers
 - [Steam](https://store.steampowered.com/) [win32, darwin, linux]
@@ -32,23 +34,59 @@ npm install @elschnagoo/local-games
 ```
 
 ```ts
-import { LocalGames, BattleNetLauncher } from '@elschnagoo/local-games';
- 
-const localGames = new LocalGames();
+import { LocalGames, BattleNetLauncher, EpicLauncher, SteamLauncher, UplayLauncher, } from '@elschnagoo/local-games';
 
-// Register a launcher [Battle.net, Epic Games, Steam] @see docs for more info
-localGames.registerLauncher(new BattleNetLauncher())
+(async () => {
+    const localGames = new LocalGames();
 
-const games = await localGames.getGames();
+    // Register a launcher [Battle.net, Epic Games, Steam, Uplay] @see docs for more info
+    const report = await localGames.registerLauncher(
+        new BattleNetLauncher(),
+        new EpicLauncher(),
+        new UplayLauncher(),
+        new SteamLauncher({
+            apiKey: '$STEAM_WEB_API_KEY', // get on https://steamcommunity.com/dev/apikey
+            steamVanity: '$STEAM_USER_VANITY', // Show on your steam profile
+        })
+    );
 
-const [game] = games;
+    if (report.success) {
+        console.log('All Launchers registered successfully');
+    } else {
+        report.result.forEach(([name, success]) => {
+            if (!success) {
+                console.log(`${name} failed to register`);
+            }
+        });
+    }
 
-// Returns the executable path
-const cmd = await localGames.getLaunchGameCMD(game);
+    const games = await localGames.getGames();
 
-// Returns the game image as base64 encoded string
-const images = await localGames.getGameImageBase64(game);
+    const [game] = games;
 
-console.log(images.portrait)
+    console.log('Game Name', game.name);
+    console.log('Game is on Wishlist', game.wishList);
+    console.log('Game is installed', game.installed);
+
+    // ...
+
+    // Returns the executable path or protocol link
+    const cmd = await game.getLauncherCMD();
+    console.log(cmd);
+    // Returns the shop cmd if exist
+    const shop = await game.getOpenShopCMD();
+    console.log(shop);
+    // Returns a default command to  "Start Game" > "Install" > "Open Shop"
+    const def = await game.defaultCMD();
+    console.log(def);
+
+    // Returns the game image as base64 encoded string (webp)
+    const images = await game.getGameImageBase64(false);
+    console.log(images?.portrait);
+
+    // ... pop child process with cmd to start the game from nodejs
+    // import * as child_process from 'child_process';
+    // if (def) child_process.exec(def);
+})();
 
 ```
