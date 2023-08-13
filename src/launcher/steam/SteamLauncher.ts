@@ -188,7 +188,7 @@ export class SteamLauncher extends GameLauncher<SteamGame> {
   }
 
   async getLauncherCMD(): Promise<string | null> {
-    return 'steam://';
+    return 'steam://advertise/';
   }
 
   async getLaunchGameCMD(game: IGame<SteamGame>): Promise<string | null> {

@@ -129,7 +129,7 @@ export class EpicLauncher extends GameLauncher<EpicGame> {
   }
 
   async getLauncherCMD(): Promise<string | null> {
-    return 'com.epicgames.launcher://';
+    return 'com.epicgames.launcher://store/';
   }
 
   async getLaunchGameCMD(game: IGame<EpicGame>): Promise<string | null> {

@@ -135,7 +135,7 @@ export class UplayLauncher extends GameLauncher<UPlayGame> {
   }
 
   async getLauncherCMD(): Promise<string | null> {
-    return 'uplay://';
+    return 'uplay://home';
   }
 
   async getLaunchGameCMD(game: IGame<UPlayGame>): Promise<string | null> {
