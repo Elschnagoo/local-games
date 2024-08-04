@@ -1,7 +1,7 @@
 {
   "name": "@elschnagoo/local-games",
   "description": "A library to get local games from different platforms and launcher",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "private": false,
@@ -16,7 +16,7 @@
     "doc": "typedoc"
   },
   "dependencies": {
-    "@grandlinex/core": "0.32.0",
+    "@grandlinex/core": "1.0.1",
     "form-data": "^4.0.0",
     "js-yaml": "4.1.0",
     "protobufjs": "^7.2.4",
